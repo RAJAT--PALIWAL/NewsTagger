@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Scanner;
 import opennlp.tools.namefind.NameFinderME;
 import opennlp.tools.sentdetect.*;
 import opennlp.tools.namefind.*;
@@ -17,7 +18,7 @@ import opennlp.tools.util.Span;
 public class NewsTagger {
 
     public void SentenceDetect(String paragraph) throws FileNotFoundException {
-        String modelPath = "E:\\Fun Projects\\Tagger\\Models\\en-sent.bin";
+        String modelPath = "Models/en-sent.bin";
         // always start with a model, a model is learned from training data
         InputStream modelIn = new FileInputStream(modelPath);
         try {
@@ -34,7 +35,7 @@ public class NewsTagger {
     }
 
     public void findTokens(String sentences[]) throws FileNotFoundException {
-        String modelPath = "E:\\Fun Projects\\Tagger\\Models\\en-token.bin";
+        String modelPath = "Models/en-token.bin";
         // always start with a model, a model is learned from training data
         InputStream modelIn = new FileInputStream(modelPath);
         try {
@@ -51,7 +52,7 @@ public class NewsTagger {
     }
 
     public void findName(String tokens[]) throws FileNotFoundException {
-        String modelPath = "E:\\Fun Projects\\Tagger\\Models\\en-ner-person.bin";
+        String modelPath = "Models/en-ner-person.bin";
         // always start with a model, a model is learned from training data
         InputStream modelIn = new FileInputStream(modelPath);
         try {
@@ -73,7 +74,7 @@ public class NewsTagger {
         try {
 
             // 1: Split sentences into tokens
-            String modelPath = "E:\\Fun Projects\\Tagger\\Models\\en-token.bin";
+            String modelPath = "Models/en-token.bin";
             InputStream modelIn = new FileInputStream(modelPath);
             TokenizerModel model_token = new TokenizerModel(modelIn);
             Tokenizer tokenizer = new TokenizerME(model_token);
@@ -81,19 +82,22 @@ public class NewsTagger {
             modelIn.close();
 
             // 2: Find names in the tokens
-            modelPath = "E:\\Fun Projects\\Tagger\\Models\\en-ner-person.bin";
+            modelPath = "Models/en-ner-person.bin";
             modelIn = new FileInputStream(modelPath);
             TokenNameFinderModel model_Name = new TokenNameFinderModel(modelIn);
             NameFinderME nameFinder = new NameFinderME(model_Name);
             Span nameSpans[] = nameFinder.find(tokens);
             for (Span nameSpan : nameSpans) {
                 System.out.println(nameSpan.toString());
-                System.out.println(tokens[nameSpan.getStart()] + " " + tokens[nameSpan.getStart() + 1]);
+                 for(int i = nameSpan.getStart();i<nameSpan.getEnd();i++){
+                     System.out.print(tokens[i] + " ");
+                 }
+                 System.out.println();
             }
             modelIn.close();
             
             // 3: Find organization names in the tokens
-            modelPath = "E:\\Fun Projects\\Tagger\\Models\\en-ner-organization.bin";
+            modelPath = "Models/en-ner-organization.bin";
             modelIn = new FileInputStream(modelPath);
             
             TokenNameFinderModel model_OrgName = new TokenNameFinderModel(modelIn);
@@ -101,12 +105,15 @@ public class NewsTagger {
             Span OrgNameSpans[] = OrgNameFinder.find(tokens);
             for (Span OrgNameSpan : OrgNameSpans) {
                 System.out.println(OrgNameSpan.toString());
-                System.out.println(tokens[OrgNameSpan.getStart()] + " " + tokens[OrgNameSpan.getStart() + 1]);
+                for(int i = OrgNameSpan.getStart();i<OrgNameSpan.getEnd();i++){
+                     System.out.print(tokens[i] + " ");
+                 }
+                 System.out.println();
             }
             modelIn.close();
             
             // 4: Find Location in the tokens
-            modelPath = "E:\\Fun Projects\\Tagger\\Models\\en-ner-location.bin";
+            modelPath = "Models/en-ner-location.bin";
             modelIn = new FileInputStream(modelPath);
             
             TokenNameFinderModel model_Location = new TokenNameFinderModel(modelIn);
@@ -114,7 +121,10 @@ public class NewsTagger {
             Span locations[] = locationName.find(tokens);
             for (Span location : locations) {
                 System.out.println(location.toString());
-                System.out.println(tokens[location.getStart()] + " " + tokens[location.getStart() + 1]);
+                for(int i = location.getStart();i<location.getEnd();i++){
+                     System.out.print(tokens[i] + " ");
+                 }
+                 System.out.println();
             }
             modelIn.close();
             
@@ -125,8 +135,9 @@ public class NewsTagger {
 
     public static void main(String[] args) {
         
-        String paragraph = "";
-        
+        System.out.println("Input news");
+        Scanner in = new Scanner(System.in);
+        String paragraph = in.nextLine();
         try {
             NewsTagger.paragraphToName(paragraph);
         } catch (Exception e) {
